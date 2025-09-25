@@ -1,4 +1,4 @@
-name: GLaDOS 自动签到
+name: GLaDOS 多账号自动签到
 
 on:
   schedule:
@@ -26,11 +26,21 @@ jobs:
         echo "等待 $DELAY_MINUTES 分钟..."
         sleep $((DELAY_MINUTES * 60))
         
-    - name: 执行签到
+    - name: 执行多账号签到
       env:
-        GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
         BARK_URL: ${{ secrets.BARK_URL }}
         BARK_KEY: ${{ secrets.BARK_KEY }}
+        # 多账号配置 - 支持最多5个账号
+        ACCOUNT1_COOKIE: ${{ secrets.ACCOUNT1_COOKIE }}
+        ACCOUNT1_NAME: ${{ secrets.ACCOUNT1_NAME }}
+        ACCOUNT2_COOKIE: ${{ secrets.ACCOUNT2_COOKIE }}
+        ACCOUNT2_NAME: ${{ secrets.ACCOUNT2_NAME }}
+        ACCOUNT3_COOKIE: ${{ secrets.ACCOUNT3_COOKIE }}
+        ACCOUNT3_NAME: ${{ secrets.ACCOUNT3_NAME }}
+        ACCOUNT4_COOKIE: ${{ secrets.ACCOUNT4_COOKIE }}
+        ACCOUNT4_NAME: ${{ secrets.ACCOUNT4_NAME }}
+        ACCOUNT5_COOKIE: ${{ secrets.ACCOUNT5_COOKIE }}
+        ACCOUNT5_NAME: ${{ secrets.ACCOUNT5_NAME }}
       run: |
         chmod +x ./scripts/glados-checkin.sh
         ./scripts/glados-checkin.sh
@@ -43,3 +53,4 @@ jobs:
         path: |
           api.log
           sign.log
+          multi-account.log
