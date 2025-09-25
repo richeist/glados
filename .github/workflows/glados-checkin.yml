@@ -1,0 +1,45 @@
+name: GLaDOS 自动签到
+
+on:
+  schedule:
+    # 每天北京时间上午8-10点之间随机执行
+    - cron: '0 0-2 * * *'
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  checkin:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 设置随机延迟
+      run: |
+        # 生成0-120分钟的随机延迟（8-10点之间）
+        DELAY_MINUTES=$((RANDOM % 120))
+        echo "DELAY_MINUTES=$DELAY_MINUTES" >> $GITHUB_ENV
+        echo "将在 $DELAY_MINUTES 分钟后执行签到"
+        
+    - name: 等待随机时间
+      run: |
+        echo "等待 $DELAY_MINUTES 分钟..."
+        sleep $((DELAY_MINUTES * 60))
+        
+    - name: 执行签到
+      env:
+        GLADOS_COOKIE: ${{ secrets.GLADOS_COOKIE }}
+        BARK_URL: ${{ secrets.BARK_URL }}
+        BARK_KEY: ${{ secrets.BARK_KEY }}
+      run: |
+        chmod +x ./scripts/glados-checkin.sh
+        ./scripts/glados-checkin.sh
+        
+    - name: 上传签到日志
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: checkin-logs-${{ github.run_number }}
+        path: |
+          api.log
+          sign.log
