@@ -3,7 +3,7 @@ name: GLaDOS 多账号自动签到
 on:
   schedule:
     # 每天北京时间上午8-10点之间随机执行
-    - cron: '0 0-2 * * *'
+    - cron: '0 1 * * *'
   workflow_dispatch: # 允许手动触发
 
 jobs:
