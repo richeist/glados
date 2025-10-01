@@ -23,13 +23,15 @@ print_error() {
 send_bark_notification() {
     local title="$1"
     local content="$2"
-    local level="${3:-active}"
-    
+    local level="${3:-active}"      # active, timeSensitive, passive
+    local group="${4:-GLaDOS}"      # 分组
+    local icon="${5:-https://cdn-icons-png.flaticon.com/128/2763/2763437.png}"  # 默认图标
+
     if [ -z "$BARK_URL" ] || [ -z "$BARK_KEY" ]; then
-        print_warning "Bark 配置未设置，跳过推送通知"
+        echo "[WARNING] Bark 配置未设置，跳过推送通知"
         return 0
     fi
-    
+
     local bark_data=$(cat <<EOF
 {
     "title": "$title",
@@ -37,17 +39,22 @@ send_bark_notification() {
     "device_key": "$BARK_KEY",
     "level": "$level",
     "badge": 1,
-    "sound": "bell.caf"
+    "sound": "bell.caf",
+    "group": "$group",
+    "icon": "$icon"
 }
 EOF
 )
-    
-    local response=$(curl -s -X POST -H "Content-Type: application/json" -d "$bark_data" "$BARK_API_URL")
-    
+
+    local response=$(curl -s -X POST \
+        -H "Content-Type: application/json" \
+        -d "$bark_data" \
+        "$BARK_URL/push")
+
     if echo "$response" | grep -q '"code":0'; then
-        print_info "Bark 推送发送成功"
+        echo "[INFO] Bark 推送发送成功"
     else
-        print_error "Bark 推送发送失败: $response"
+        echo "[ERROR] Bark 推送发送失败: $response"
     fi
 }
 
