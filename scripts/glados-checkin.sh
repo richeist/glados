@@ -170,7 +170,9 @@ main() {
     
     local has_multi=false
     for i in {1..5}; do
-        if [ ! -z "${!ACCOUNT${i}_COOKIE}" ] && [ ! -z "${!ACCOUNT${i}_NAME}" ]; then
+        local cookie_var="ACCOUNT${i}_COOKIE"
+        local name_var="ACCOUNT${i}_NAME"
+        if [ ! -z "${!cookie_var}" ] && [ ! -z "${!name_var}" ]; then
             has_multi=true
             break
         fi
