@@ -2,8 +2,10 @@ name: GLaDOS 多账号自动签到
 
 on:
   schedule:
-    # 每天北京时间上午8-10点之间随机执行
-    - cron: '0 1 * * *'
+    # 北京时间 8:00、12:00、20:00 各触发一次
+    - cron: '0 0 * * *'   # UTC 0:00 = 北京 8:00
+    # - cron: '0 4 * * *'   # UTC 4:00 = 北京 12:00
+    # - cron: '0 12 * * *'  # UTC 12:00 = 北京 20:00
   workflow_dispatch: # 允许手动触发
 
 jobs:
@@ -13,19 +15,7 @@ jobs:
     steps:
     - name: 检出代码
       uses: actions/checkout@v4
-      
-    - name: 设置随机延迟
-      run: |
-        # 生成0-120分钟的随机延迟（8-10点之间）
-        DELAY_MINUTES=$((RANDOM % 120))
-        echo "DELAY_MINUTES=$DELAY_MINUTES" >> $GITHUB_ENV
-        echo "将在 $DELAY_MINUTES 分钟后执行签到"
-        
-    - name: 等待随机时间
-      run: |
-        echo "等待 $DELAY_MINUTES 分钟..."
-        sleep $((DELAY_MINUTES * 60))
-        
+
     - name: 执行多账号签到
       env:
         BARK_URL: ${{ secrets.BARK_URL }}
